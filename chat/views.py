@@ -201,16 +201,20 @@ def msg(msg):
 def microphone_input(request):
     print("sup my g")
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+       
         audio_file = request.FILES['audio_data']
+        language = request.POST['language']
+
         audio = AudioSegment.from_file(audio_file)
 
             # Save the audio as a WAV file
+        
         audio.export("uploaded_audio.wav", format="wav")
         print("done")
         #let's play football!
         #export audio
         
-        transcribed_message = transcribe(audio)
+        transcribed_message = transcribe(audio,language)
         global transcript
         if transcribed_message != None:
             transcript += transcribed_message
@@ -223,20 +227,22 @@ def microphone_input(request):
 
 
     
-def transcribe(audio_file):
+def transcribe(audio_file,selected_language):
     audio_file = "uploaded_audio.wav"
     batch_size = 16 # reduce if low on GPU mem
     
     # 1. Transcribe with original whisper (batched)
     
     audio = whisperx.load_audio(audio_file)
-    result = model.transcribe(audio, batch_size=batch_size,language="es")
+    #change language type, need to actually make this work tho lol
+    result = model.transcribe(audio, batch_size=batch_size,language=selected_language)
+    
     #result = model.transcribe(audio, batch_size=batch_size)
     
     print(result)
     
     language = result['language']
-    #print(language)
+    print(language)
 
     #print(result["segments"][0]["text"]) # before alignment
     if result["segments"] != []: # no speech results in an empty list
@@ -255,7 +261,7 @@ def submit(request):
      reply = msg(new_transcript)
      text = reply # text holds gpt response
      asyncio.run(_main())
-     time.sleep(5)
+     #time.sleep(5)
      return JsonResponse({'success': True,'transcript':new_transcript,'ai_response':text}) #idkthis naming is not consistent but fuck it we ball
 
 

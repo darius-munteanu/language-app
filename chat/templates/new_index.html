@@ -227,8 +227,14 @@ function stopRecording() {
 
 function sendAudioData(audioBlob) {
     console.log("Sending data to server...");
+    var selectElement = document.getElementById('languageSelect');
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    // Log the value and text of the selected option
+    //console.log("Selected Value: " + selectedOption.value);
+    //console.log("Selected Text: " + selectedOption.text);
     const formData = new FormData();
     formData.append('audio_data', audioBlob);
+    formData.append('language', selectedOption.value);
     var updateCountUrl = "{% url 'microphone_input' %}";  // Replace with your URL
     fetch(updateCountUrl, {
         method: 'POST',
@@ -245,7 +251,7 @@ function sendAudioData(audioBlob) {
 }
 
 
-
+//final transcription bit 
 toggleButton.addEventListener('click', () => {
     if (isRecording) {
         clearInterval(sendInterval); // Clear the interval for sending data
@@ -309,14 +315,16 @@ toggleButton.addEventListener('click', () => {
   
   // Define an array of languages
   var languages = ["Afrikaans", "Arabic", "Armenian", "Azerbaijani", "Belarusian", "Bosnian", "Bulgarian", "Catalan", "Chinese", "Croatian", "Czech", "Danish", "Dutch", "English", "Estonian", "Finnish", "French", "Galician", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Italian", "Japanese", "Kannada", "Kazakh", "Korean", "Latvian", "Lithuanian", "Macedonian", "Malay", "Marathi", "Maori", "Nepali", "Norwegian", "Persian", "Polish", "Portuguese", "Romanian", "Russian", "Serbian", "Slovak", "Slovenian", "Spanish", "Swahili", "Swedish", "Tagalog", "Tamil", "Thai", "Turkish", "Ukrainian", "Urdu", "Vietnamese", "Welsh"];
-  
-  // Loop through the languages array and create options
+  var languages = [["Afrikaans", "af"], ["Arabic", "ar"], ["Armenian", "hy"], ["Azerbaijani", "az"], ["Belarusian", "be"], ["Bosnian", "bs"], ["Bulgarian", "bg"], ["Catalan", "ca"], ["Chinese", "zh"], ["Croatian", "hr"], ["Czech", "cs"], ["Danish", "da"], ["Dutch", "nl"], ["English", "en"], ["Estonian", "et"], ["Finnish", "fi"], ["French", "fr"], ["Galician", "gl"], ["German", "de"], ["Greek", "el"], ["Hebrew", "he"], ["Hindi", "hi"], ["Hungarian", "hu"], ["Icelandic", "is"], ["Indonesian", "id"], ["Italian", "it"], ["Japanese", "ja"], ["Kannada", "kn"], ["Kazakh", "kk"], ["Korean", "ko"], ["Latvian", "lv"], ["Lithuanian", "lt"], ["Macedonian", "mk"], ["Malay", "ms"], ["Marathi", "mr"], ["Maori", "mi"], ["Nepali", "ne"], ["Norwegian", "no"], ["Persian", "fa"], ["Polish", "pl"], ["Portuguese", "pt"], ["Romanian", "ro"], ["Russian", "ru"], ["Serbian", "sr"], ["Slovak", "sk"], ["Slovenian", "sl"], ["Spanish", "es"], ["Swahili", "sw"], ["Swedish", "sv"], ["Tagalog", "tl"], ["Tamil", "ta"], ["Thai", "th"], ["Turkish", "tr"], ["Ukrainian", "uk"], ["Urdu", "ur"], ["Vietnamese", "vi"], ["Welsh", "cy"]]
+
+// Loop through the languages array and create options
   languages.forEach(function(language) {
     var option = document.createElement('option');
-    option.value = language.toLowerCase();
-    option.text = language;
+    option.value = language[1].toLowerCase();
+    option.text = language[0];
     selectElement.add(option);
   });
+
 </script>
   
 </body>
