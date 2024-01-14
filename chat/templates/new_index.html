@@ -1,0 +1,272 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+      body {
+          display: flex;
+          height: calc(100vh - 20px); /* reduced height with a gap at the bottom */
+          margin: 0;
+          padding-bottom: 10px;  /* gap at the bottom */
+          padding-top:10px;
+          justify-content: center;
+          background: #3b3c4e;
+          font-family: Arial, sans-serif;
+      }
+      /*
+      #3b3c4e
+      #4e4f65;
+      */
+      .sidebar {
+          position:relative;
+          flex: 0.5;
+          height: 100%;
+          background: #3b3c4e;
+          padding: 5px;
+          box-sizing: border-box;
+          overflow: hidden;
+          overflow-y: auto;
+      }
+
+      .main-content {
+          flex: 2.5;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+      }
+
+      .chat-box {
+          flex:1;
+          background: black;
+          padding: 5px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+          color: white;
+          display: flex;
+          flex-direction: column;
+      }
+
+      .chat-box2 {
+          flex:0.3;
+          background: black;
+          padding: 0px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+          color: white;
+          display: flex;
+          flex-direction: row;
+      }
+
+      .chat-box textarea,
+      .chat-box2 textarea {
+          background: transparent;
+          border: none;
+          color:white;
+          flex-grow:1;
+          resize: none;
+      }
+
+      .inner-box {
+          
+          display: flex;
+          align-items: center; /* Vertically centers the child elements */
+          justify-content: center; /* Horizontally centers the child elements */
+          gap: 10px; /* Adding gap between the buttons */
+          background:#434459;
+          width: 30%; /* width of the inner box */
+      }
+      .microphone,,.settings {
+          height: 125px;
+          width: 125px;
+      }
+      #microphone,#mute {
+          height: 100px;
+          width: 100px;
+          background: url({% static 'chat/assets/microphone.png' %});
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position:center;
+          border-radius:0px;
+          outline:none;
+          border-style:none;
+          
+      }
+      .microphone:focus {
+        outline: none;
+        box-shadow: none;
+      }
+
+
+      #settings {
+        height: 50px;
+        width: 50px;
+        position:absolute;
+        bottom:10px;
+        left:10px;
+        background: url({% static 'chat/assets/settings.png' %});
+        background-size:contain;
+        background-position:center;
+        background-repeat:no-repeat;
+        border-radius:0px;
+        box-shadow:none !important;
+        outline:none;
+        border-style:none;
+        transition: background-color 0.3s, border-color 0.3s;
+
+
+      }
+      #status.glow {
+        box-shadow: 0 0 5px 2px #e74c3c inset; /* Add a subtle glow using a box-shadow */
+    }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">Sidebar 1 content</div>
+  <button id= "settings"> </button>
+
+<div class="main-content">
+    <div class="chat-box">
+        <audio id="audioPlayer" autoplay style="display: none;">
+            <source src="" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>        
+        <textarea id ="ai_chat"disabled>Chat box 1 content</textarea>
+    </div>
+    <div class="chat-box2">
+    
+      <div class="inner-box">
+        <button id="microphone"> </button>
+        <div id="status">Recording Status</div>
+      </div>
+      
+      <textarea id="user_chat"disabled>hiiiii</textarea>
+    </div>
+</div>
+
+<div class="sidebar">Sidebar 2 asdf</div>
+
+
+
+
+
+<script>
+const toggleButton = document.getElementById('microphone');
+const statusText = document.getElementById('status');
+
+let mediaRecorder;
+var audioChunks = [];
+let isRecording = false;
+let sendInterval
+function startRecording() {
+    if (!isRecording) {
+        statusText.textContent = "Recording...";
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then((stream) => {
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = (e) => {
+                    console.log("send");
+                    if (e.data.size > 0) {
+                        audioChunks.push(e.data);
+                    }
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                sendInterval = setTimeout(() => {
+                    stopRecording();
+                    startRecording(); // Recursive call to restart recording after 3 seconds
+                }, 3000);
+            })
+            .catch((error) => {
+                console.error("Error accessing media devices: ", error);
+            });
+    }
+}
+
+function stopRecording() {
+    if (isRecording) {
+        statusText.textContent = "Stopped";
+        mediaRecorder.stop();
+        isRecording = false;
+
+        if (audioChunks.length > 0) {
+            const blob = new Blob(audioChunks, { type: audioChunks[0].type });
+            sendAudioData(blob); // Function to send audio data to the server
+            audioChunks = []; // Clear the chunks for the next recording
+        }
+    }
+}
+
+function sendAudioData(audioBlob) {
+    console.log("Sending data to server...");
+    const formData = new FormData();
+    formData.append('audio_data', audioBlob);
+    var updateCountUrl = "{% url 'microphone_input' %}";  // Replace with your URL
+    fetch(updateCountUrl, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',  // Add this line
+            'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token
+        },
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Response from server: ' + data);
+    })
+}
+
+
+
+toggleButton.addEventListener('click', () => {
+    if (isRecording) {
+        clearInterval(sendInterval); // Clear the interval for sending data
+        stopRecording();
+        console.log("Done recording. Sending data to server.")
+        const transcript_box = document.getElementById('user_chat')
+        const ai_chat = document.getElementById('ai_chat')
+        var updateCountUrl = "{% url 'submit' %}";  // Replace with your URL
+    
+        fetch(updateCountUrl, {
+                                method: 'GET',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',  // Add this line
+                                    'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Response from server-test: ' + data);
+                                transcript_box.textContent = data.transcript;
+                                ai_chat.textContent = data.ai_response;
+                                var audio = "/media/test.mp3"; // yo maybe this is insecure LMFAOOOOOOOOOO anybody can go to this and just take the data
+                                //fuck it data breach time, later i can give erorr code to not server trying to access it  nah nvm django got me but this should be stored securely 
+                                //as in i should randomise the temporary string just use a random shti kys honlestly
+                                const audioPlayer = document.getElementById('audioPlayer'); // Replace 'your-audio-player-id' with your actual ID
+                                audioPlayer.src = audio;
+                                audioPlayer.load(); // Reload the audio
+                                audioPlayer.play(); // Play the newly loaded audio
+                            })
+                    
+        //here, have a GET request to the server, (CSRF ofc for the data :) - this should be in that one function submit
+                            
+
+    } else {
+        startRecording();
+    }
+});
+</script>
+
+
+<script>
+    const button = document.getElementById('status');
+
+    button.addEventListener('click', function() {
+         button.classList.toggle('glow');
+    });
+</script>
+
+</body>
+</html>
+

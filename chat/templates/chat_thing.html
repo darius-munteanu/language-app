@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+      body {
+          display: flex;
+          height: calc(100vh - 20px); /* reduced height with a gap at the bottom */
+          margin: 0;
+          padding-bottom: 10px;  /* gap at the bottom */
+          padding-top:10px;
+          justify-content: center;
+          background: #3b3c4e;
+          font-family: Arial, sans-serif;
+      }
+      /*
+      #3b3c4e
+      #4e4f65;
+      */
+      .sidebar {
+          position:relative;
+          flex: 0.5;
+          height: 100%;
+          background: #3b3c4e;
+          padding: 5px;
+          box-sizing: border-box;
+          overflow: hidden;
+          overflow-y: auto;
+      }
+
+      .main-content {
+          flex: 2.5;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+      }
+
+      .chat-box {
+          flex:1;
+          background: black;
+          padding: 5px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+          color: white;
+          display: flex;
+          flex-direction: column;
+      }
+
+      .chat-box2 {
+          flex:0.3;
+          background: black;
+          padding: 0px;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+          color: white;
+          display: flex;
+          flex-direction: row;
+      }
+
+      .chat-box textarea,
+      .chat-box2 textarea {
+          background: transparent;
+          border: none;
+          color:white;
+          flex-grow:1;
+          resize: none;
+      }
+
+      .inner-box {
+          
+          display: flex;
+          align-items: center; /* Vertically centers the child elements */
+          justify-content: center; /* Horizontally centers the child elements */
+          gap: 10px; /* Adding gap between the buttons */
+          background:#434459;
+          width: 30%; /* width of the inner box */
+      }
+      .microphone,,.settings {
+          height: 125px;
+          width: 125px;
+      }
+      #microphone,#mute {
+          height: 100px;
+          width: 100px;
+          background: url({% static 'chat/assets/microphone.png' %});
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position:center;
+          border-radius:0px;
+          box-shadow:none !important;
+          outline:none;
+          border-style:none;
+          
+      }
+      .microphone:focus {
+        outline: none;
+        box-shadow: none;
+      }
+
+
+      #settings {
+        height: 50px;
+        width: 50px;
+        position:absolute;
+        bottom:10px;
+        left:10px;
+        background: url({% static 'chat/assets/settings.png' %});
+        background-size:contain;
+        background-position:center;
+        background-repeat:no-repeat;
+        border-radius:0px;
+        box-shadow:none !important;
+        outline:none;
+        border-style:none;
+      }
+      
+    </style>
+</head>
+<body>
+
+<div class="sidebar">Sidebar 1 content</div>
+  <button id= "settings"> </button>
+
+<div class="main-content">
+    <div class="chat-box">
+        <textarea disabled>Chat box 1 content</textarea>
+    </div>
+    <div class="chat-box2">
+    
+      <div class="inner-box">
+        <button id="microphone"> </button>
+      </div>
+      
+      <textarea id="user_chat"disabled>hiiiii</textarea>
+    </div>
+</div>
+
+<div class="sidebar">Sidebar 2 among us</div>
+
+
+
+
+
+<script>
+    // JavaScript to handle the button click event
+    document.getElementById("microphone").addEventListener("click", function() {
+        // Update the content dynamically
+        var contentElement = document.getElementById("user_chat");
+        contentElement.textContent = "sup";
+
+        // Send the updated count to the server
+        var updateCountUrl = "{% url 'microphone_input' %}";  // Generates URL dynamically
+        fetch(updateCountUrl, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',  // Add this line
+                'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ updated_count: "test" }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Updated count sent to the server:', data.updated_count);
+                var x = data.x;
+
+                // Update your textbox value
+                document.getElementById("user_chat").value = x;
+            }
+        })
+        .catch(error => {
+            console.error('Error sending updated count to the server:', error);
+        });
+    });
+</script>
+
+
+</body>
+</html>
+
