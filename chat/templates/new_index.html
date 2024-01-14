@@ -267,6 +267,31 @@ toggleButton.addEventListener('click', () => {
     });
 </script>
 
+<script>
+    document.querySelector('.settings').addEventListener('click', function() {
+        document.getElementById('settings-popup').classList.toggle('active');
+    });
+    document.querySelector('#close-settings').addEventListener('click', function() {
+        document.getElementById('settings-popup').classList.remove('active');
+    });
+  
+  
+  
+  
+  var selectElement = document.getElementById('languageSelect');
+  
+  // Define an array of languages
+  var languages = ["Afrikaans", "Arabic", "Armenian", "Azerbaijani", "Belarusian", "Bosnian", "Bulgarian", "Catalan", "Chinese", "Croatian", "Czech", "Danish", "Dutch", "English", "Estonian", "Finnish", "French", "Galician", "German", "Greek", "Hebrew", "Hindi", "Hungarian", "Icelandic", "Indonesian", "Italian", "Japanese", "Kannada", "Kazakh", "Korean", "Latvian", "Lithuanian", "Macedonian", "Malay", "Marathi", "Maori", "Nepali", "Norwegian", "Persian", "Polish", "Portuguese", "Romanian", "Russian", "Serbian", "Slovak", "Slovenian", "Spanish", "Swahili", "Swedish", "Tagalog", "Tamil", "Thai", "Turkish", "Ukrainian", "Urdu", "Vietnamese", "Welsh"];
+  
+  // Loop through the languages array and create options
+  languages.forEach(function(language) {
+    var option = document.createElement('option');
+    option.value = language.toLowerCase();
+    option.text = language;
+    selectElement.add(option);
+  });
+  </script>
+  
 </body>
 </html>
 
