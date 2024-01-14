@@ -98,7 +98,7 @@
       }
 
 
-      #settings {
+      .settings {
         height: 50px;
         width: 50px;
         position:absolute;
@@ -113,8 +113,23 @@
         outline:none;
         border-style:none;
         transition: background-color 0.3s, border-color 0.3s;
+      }
+       .settings-popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+       }
 
+      .settings-popup.active {
+        display: block;
+      }
 
+      
       }
       #status.glow {
         box-shadow: 0 0 5px 2px #e74c3c inset; /* Add a subtle glow using a box-shadow */
@@ -124,8 +139,20 @@
 <body>
 
 <div class="sidebar">Sidebar 1 content</div>
-  <button id= "settings"> </button>
+  <button class= "settings"> </button>
+  <div id="settings-popup" class="settings-popup">
+    <!-- Settings content goes here -->
+    <label for="languageSelect">Select Language:</label>
+    <select id="languageSelect" class = "custom-dropdown">
+    </select>
+    <br>
+    <label for="myCheckbox">
+        <input type="checkbox" id="myCheckbox"> Enable Feature
+      </label>
 
+    <br>
+    <button id="close-settings">Close</button>
+   </div>
 <div class="main-content">
     <div class="chat-box">
         <audio id="audioPlayer" autoplay style="display: none;">
@@ -290,7 +317,7 @@ toggleButton.addEventListener('click', () => {
     option.text = language;
     selectElement.add(option);
   });
-  </script>
+</script>
   
 </body>
 </html>
