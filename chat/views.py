@@ -104,17 +104,6 @@ def logout_view(request):
 def main(request):
     return render(request,'new_index.html')
 
-def update_count(request):
-    print("hi")
-    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        data = json.loads(request.body)
-        print(data)
-        audio = AudioSegment.from_wav(audio_file)
-        # You can also adjust parameters like bitrate and channels if needed
-        audio.export("processed_audio.mp3", format="mp3")
-        return JsonResponse({'success': True, 'updated_count': updated_count})
-    
-    return JsonResponse({'success': False})
 
 
 def chat_thing(request):
@@ -154,7 +143,7 @@ Let’s practice Spanish.
 
 You are Alejandro, a Spaniard from Madrid. You want to have a conversation and learn more about me.
 
-You should keep your answers relatively short so as to make the conversation flow.
+You should keep your answers relatively short so as to make the conversation flow. 
 
 Ask your first question as Alejandro
 
