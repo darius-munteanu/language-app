@@ -237,6 +237,7 @@ function sendAudioData(audioBlob) {
     const formData = new FormData();
     formData.append('audio_data', audioBlob);
     formData.append('language', selectedOption.value);
+    formData.append('full_language',selectedOption.text)
     var updateCountUrl = "{% url 'microphone_input' %}";  // Replace with your URL
     fetch(updateCountUrl, {
         method: 'POST',

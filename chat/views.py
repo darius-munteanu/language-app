@@ -15,7 +15,7 @@ from pydub import AudioSegment
 import whisperx
 import gc
 import asyncio
-from edge_tts import Communicate, SubMaker, list_voices
+from edge_tts import Communicate, SubMaker, list_voices,VoicesManager
 import openai
 
 import time
@@ -110,16 +110,27 @@ def chat_thing(request):
     return render(request,'new_index.html')
 
 text = "Hola!! Como te llamas?"
-VOICE = "es-ES-AlvaroNeural"
+#VOICE = "es-ES-AlvaroNeural"
 #VOICE = "ro-RO-AlinaNeural"
 #VOICE = "es-ES-ElviraNeural"
 OUTPUT_FILE = "media/test.mp3"
 
+selected_gender = "Male"
+async def _getvoice(selected_language):
+    """Main function"""
+    voices = await VoicesManager.create()
+    locale_gen = f"{selected_language}-{selected_language.upper()}"
+
+    voice = voices.find(Gender=selected_gender, Language=selected_language,Locale=locale_gen)
+    # Also supports Locales
+    # voice = voices.find(Gender="Female", Locale="es-AR")
+    return voice[0]["Name"]
+
 SPEECH_RATE = "+0%"  # Adjust the speech rate as needed
-async def _main():
-    tts = Communicate(
+async def _main(selected_voice):
+    tts = Communicate( 
         text,
-        VOICE,
+        selected_voice,
         rate=SPEECH_RATE,
     )
 
@@ -137,6 +148,8 @@ Ask your first question as Alina
 
 Do not break character under any circumstances
 """
+
+
 role = """
 
 Let’s practice Spanish.
@@ -146,6 +159,21 @@ You are Alejandro, a Spaniard from Madrid. You want to have a conversation and l
 You should keep your answers relatively short so as to make the conversation flow. 
 
 Ask your first question as Alejandro
+
+Do not break character under any circumstances
+"""
+
+
+
+role = """
+
+Let’s practice Languages.
+
+You are Alvaro, a native from the language you are being spoken to in. You want to have a conversation and learn more about me.
+
+You should keep your answers relatively short so as to make the conversation flow. 
+
+Ask your first question as Alvaro
 
 Do not break character under any circumstances
 """
@@ -189,11 +217,13 @@ def msg(msg):
 
 def microphone_input(request):
     print("sup my g")
+    global selected_language
+    global full_selected_language
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-       
+        
         audio_file = request.FILES['audio_data']
-        language = request.POST['language']
-
+        selected_language = request.POST['language']
+        full_selected_language = request.POST['full_language']
         audio = AudioSegment.from_file(audio_file)
 
             # Save the audio as a WAV file
@@ -203,7 +233,7 @@ def microphone_input(request):
         #let's play football!
         #export audio
         
-        transcribed_message = transcribe(audio,language)
+        transcribed_message = transcribe(audio,selected_language)
         global transcript
         if transcribed_message != None:
             transcript += transcribed_message
@@ -230,8 +260,8 @@ def transcribe(audio_file,selected_language):
     
     print(result)
     
-    language = result['language']
-    print(language)
+    asdf = result['language']
+    
 
     #print(result["segments"][0]["text"]) # before alignment
     if result["segments"] != []: # no speech results in an empty list
@@ -243,13 +273,15 @@ def transcribe(audio_file,selected_language):
 
 def submit(request):
      global transcript
-     new_transcript = transcript
-     transcript = "" 
-
      global text
+     new_transcript = transcript 
+     transcript = "" 
+     
+     
      reply = msg(new_transcript)
      text = reply # text holds gpt response
-     asyncio.run(_main())
+     selected_voice = asyncio.run(_getvoice(selected_language))
+     asyncio.run(_main(selected_voice))
      #time.sleep(5)
      return JsonResponse({'success': True,'transcript':new_transcript,'ai_response':text}) #idkthis naming is not consistent but fuck it we ball
 
