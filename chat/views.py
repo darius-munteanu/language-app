@@ -30,7 +30,7 @@ compute_type = "float16" # change to "int8" if low on GPU mem (may reduce accura
 """
 device = "cuda"
 compute_type ="float16"
-model = whisperx.load_model("medium", device, compute_type=compute_type)
+model = whisperx.load_model("large-v2", device, compute_type=compute_type)
 
 """
 def index(request):
@@ -115,7 +115,7 @@ text = "Hola!! Como te llamas?"
 #VOICE = "es-ES-ElviraNeural"
 OUTPUT_FILE = "media/test.mp3"
 
-selected_gender = "Male"
+#selected_gender = "Male"
 async def _getvoice(selected_language):
     """Main function"""
     voices = await VoicesManager.create()
@@ -169,11 +169,13 @@ role = """
 
 Let’s practice Languages.
 
-You are Alvaro, a native from the language you are being spoken to in. You want to have a conversation and learn more about me.
+You are Alvaro. You want to have a conversation and learn more about me.
 
 You should keep your answers relatively short so as to make the conversation flow. 
 
 Ask your first question as Alvaro
+
+Respond in the language you are spoken to in
 
 Do not break character under any circumstances
 """
@@ -219,11 +221,13 @@ def microphone_input(request):
     print("sup my g")
     global selected_language
     global full_selected_language
+    global selected_gender
     if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         
         audio_file = request.FILES['audio_data']
         selected_language = request.POST['language']
         full_selected_language = request.POST['full_language']
+        selected_gender = request.POST['gender']
         audio = AudioSegment.from_file(audio_file)
 
             # Save the audio as a WAV file
