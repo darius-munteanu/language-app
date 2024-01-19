@@ -28,9 +28,15 @@ transcript = ""
 device = "cuda"
 compute_type = "float16" # change to "int8" if low on GPU mem (may reduce accuracy)
 """
-device = "cuda"
-compute_type ="float16"
-model = whisperx.load_model("large-v2", device, compute_type=compute_type)
+cpu_selected = True
+if not cpu_selected:
+    device = "cuda"
+    compute_type ="float16"
+    model = whisperx.load_model("large-v2", device, compute_type=compute_type)
+elif cpu_selected:
+     device = "cpu"
+     compute_type = "int8"
+     model = whisperx.load_model("medium", device, compute_type=compute_type)
 
 """
 def index(request):
@@ -169,13 +175,13 @@ role = """
 
 Let’s practice Languages.
 
-You are Alvaro. You want to have a conversation and learn more about me.
+You are a person. You want to have a conversation and learn more about me.
 
 You should keep your answers relatively short so as to make the conversation flow. 
 
-Ask your first question as Alvaro
+Ask your first question.
 
-Respond in the language you are spoken to in
+Respond in the language you are spoken to in.
 
 Do not break character under any circumstances
 """

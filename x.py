@@ -10,6 +10,7 @@ async def _getvoice():
     voice = voices.find(Gender=selected_gender, Language="es",Locale="es-ES")
     # Also supports Locales
     # voice = voices.find(Gender="Female", Locale="es-AR")
+    print(voice[1])
     return voice[0]["Name"]
 #communicate = edge_tts.Communicate(TEXT, random.choice(voice)["Name"])
 #await communicate.save(OUTPUT_FILE)
@@ -32,3 +33,7 @@ x  = asyncio.run(_getvoice())
 VOICE = x
 print(x)
 asyncio.run(_main())
+
+input_string = "ms-es-Alvaroneural"
+name = input_string.rsplit('-', 1)[-1].replace("Neural", "")
+print(name)
