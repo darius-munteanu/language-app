@@ -37,7 +37,8 @@ elif cpu_selected:
      device = "cpu"
      compute_type = "int8"
      model = whisperx.load_model("medium", device, compute_type=compute_type)
-
+else:
+     print("unselected mode")
 """
 def index(request):
     #user = Users.objects.create_user('myusername', password='mypassword')
