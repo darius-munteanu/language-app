@@ -231,7 +231,7 @@ function stopRecording() {
         }
     }
 }
-
+//basic send func, runs every  3 seconds
 function sendAudioData(audioBlob) {
     console.log("Sending data to server...");
     var selectElement = document.getElementById('languageSelect');
@@ -268,33 +268,35 @@ toggleButton.addEventListener('click', () => {
         stopRecording();
 
         console.log("Done recording. Sending data to server.")
-        const transcript_box = document.getElementById('user_chat')
-        const ai_chat = document.getElementById('ai_chat')
-        var updateCountUrl = "{% url 'submit' %}";  // Replace with your URL
-    
-        fetch(updateCountUrl, {
-                                method: 'GET',
-                                headers: {
-                                    'X-Requested-With': 'XMLHttpRequest',  // Add this line
-                                    'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token
-                                }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                console.log('Response from server-test: ' + data);
-                                transcript_box.textContent = data.transcript;
-                                ai_chat.textContent = data.ai_response;
-                                var audio = "/media/test.mp3"; // yo maybe this is insecure LMFAOOOOOOOOOO anybody can go to this and just take the data
-                                //fuck it data breach time, later i can give erorr code to not server trying to access it  nah nvm django got me but this should be stored securely 
-                                //as in i should randomise the temporary string just use a random shti kys honlestly
-                                const audioPlayer = document.getElementById('audioPlayer'); // Replace 'your-audio-player-id' with your actual ID
-                                audioPlayer.src = audio;
-                                audioPlayer.load(); // Reload the audio
-                                audioPlayer.play(); // Play the newly loaded audio
-                            })
-                    
+        setTimeout(() => { //need to add 3 seconds to ensure that any remaining reecordings are sent to the server successfully:)
+            console.log("dfs");
+            const transcript_box = document.getElementById('user_chat')
+            const ai_chat = document.getElementById('ai_chat')
+            var updateCountUrl = "{% url 'submit' %}";  // Replace with your URL
+        
+            fetch(updateCountUrl, {
+                                    method: 'GET',
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest',  // Add this line
+                                        'X-CSRFToken': '{{ csrf_token }}',  // Include CSRF token
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Response from server-test: ' + data);
+                                    transcript_box.textContent = data.transcript;
+                                    ai_chat.textContent = data.ai_response;
+                                    var audio = "/media/test.mp3"; // yo maybe this is insecure LMFAOOOOOOOOOO anybody can go to this and just take the data
+                                    //fuck it data breach time, later i can give erorr code to not server trying to access it  nah nvm django got me but this should be stored securely 
+                                    //as in i should randomise the temporary string just use a random shti kys honlestly
+                                    const audioPlayer = document.getElementById('audioPlayer'); // Replace 'your-audio-player-id' with your actual ID
+                                    audioPlayer.src = audio;
+                                    audioPlayer.load(); // Reload the audio
+                                    audioPlayer.play(); // Play the newly loaded audio
+                                })
+                        
         //here, have a GET request to the server, (CSRF ofc for the data :) - this should be in that one function submit
-                            
+        }, 3000);                   
 
     } else {
         startRecording();
