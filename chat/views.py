@@ -6,9 +6,10 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
 from django.http import JsonResponse
-from .models import Users, Messages
+from .models import Users, Messages,CustomUserManager
+from django.db import IntegrityError
 # Create your views here.
-from .forms import LoginForm
+from .forms import LoginForm, RegisterForm
 from django.contrib.auth.decorators import login_required
 import json
 from pydub import AudioSegment
@@ -18,7 +19,14 @@ import asyncio
 from edge_tts import Communicate, SubMaker, list_voices,VoicesManager
 import openai
 
+
 import time
+
+from django.contrib.auth import get_user_model
+from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.utils import timezone
+
 
 global model
 global transcript
@@ -68,6 +76,37 @@ def register(request):
     return HttpResponse("register")
 
     
+def register(request):
+    username = "hi"
+    password="hi2"
+    try:
+        hashed_password = make_password(password)
+        user = Users.objects.create(Username=username, password=hashed_password)
+    except IntegrityError:
+            print(f"Username '{username}' is already taken.")
+
+    return render(request,'register.html')
+
+
+def register(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+        try:
+            hashed_password = make_password(password)
+            user = Users.objects.create(Username=username, password=hashed_password)
+            return redirect('login_view')  # Replace 'home' with your desired redirect URL
+        except Exception as e:
+            form.add_error(None, 'Invalid username or password. Please try again.')
+            print(e)
+    else:
+        form = RegisterForm()
+    return render(request, 'register.html', {'form': form})
+
+
 #user should be a user object, obtained from either get_user_by_id or get_user_by_username. e.g  view_user_messages(get_user_by_id(1)) functional programming wohooo
 def new_user(username,password):
     #NEED TO HASH PASSWORD HERE!!!!!!!!!!!!!!!!!!!!!!! DO NOT STORE IT AS PLAINTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
