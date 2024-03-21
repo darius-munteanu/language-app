@@ -65,6 +65,7 @@
           color:white;
           flex-grow:1;
           resize: none;
+          outline: none;
       }
 
       .inner-box {
@@ -371,7 +372,6 @@ const vocabularyDiv = document.getElementById('vocabulary');
 // Add click event listener to the textarea
 aiChatTextarea.addEventListener('click', function(event) {
     // Check if a word is clicked (separated by spaces)
-    console.log("awa");
     const clickedWord = getClickedWord(event.target.value, event.target.selectionStart);
     
     if (clickedWord) {
@@ -416,6 +416,14 @@ function addWordToVocabulary(word) {
 
     // Add a space after the word for better readability
     vocabularyDiv.appendChild(document.createTextNode(' '));
+
+    // Add click event listener to the word span for removal
+    wordSpan.addEventListener('click', function() {
+        // Remove the clicked word span
+        vocabularyDiv.removeChild(wordSpan);
+        // Remove the space after the word
+        vocabularyDiv.removeChild(document.createTextNode(' '));
+    });
 }
 
 

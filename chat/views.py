@@ -98,7 +98,7 @@ def register(request):
         try:
             hashed_password = make_password(password)
             user = Users.objects.create(Username=username, password=hashed_password)
-            return redirect('login_view')  # Replace 'home' with your desired redirect URL
+            return redirect('login_view')  
         except Exception as e:
             form.add_error(None, 'Invalid username or password. Please try again.')
             print(e)
