@@ -166,7 +166,7 @@
             <source src="" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>        
-        <textarea id ="ai_chat"disabled>Chat box 1 content</textarea>
+        <textarea id ="ai_chat"readonly>Chat box 1 content</textarea>
     </div>
     <div class="chat-box2">
     
@@ -179,7 +179,9 @@
     </div>
 </div>
 
-<div class="sidebar">Sidebar 2 asdf</div>
+<div class="sidebar">
+    <div id = "vocabulary">hi</div>
+</div>
 
 
 
@@ -361,6 +363,65 @@ toggleButton.addEventListener('click', () => {
 // Call the function on page load
  window.onload = setSelectedValue;
   
+
+// Get references to the textarea and the div for vocabulary
+const aiChatTextarea = document.getElementById('ai_chat');
+const vocabularyDiv = document.getElementById('vocabulary');
+
+// Add click event listener to the textarea
+aiChatTextarea.addEventListener('click', function(event) {
+    // Check if a word is clicked (separated by spaces)
+    console.log("awa");
+    const clickedWord = getClickedWord(event.target.value, event.target.selectionStart);
+    
+    if (clickedWord) {
+        // Add the clicked word to the vocabulary div
+        addWordToVocabulary(clickedWord);
+    }
+});
+
+// Function to extract the clicked word from the textarea content
+function getClickedWord(text, cursorPosition) {
+    // Split the text into words
+    const words = text.split(' ');
+    let wordStartPosition = 0;
+    let clickedWord = '';
+
+    // Find the clicked word based on the cursor position
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const wordEndPosition = wordStartPosition + word.length;
+
+        // Check if the cursor position is within the current word
+        if (cursorPosition >= wordStartPosition && cursorPosition <= wordEndPosition) {
+            clickedWord = word;
+            break;
+        }
+
+        // Move the start position to the next word
+        wordStartPosition = wordEndPosition + 1; // Add 1 for the space
+    }
+
+    return clickedWord;
+}
+
+// Function to add a word to the vocabulary div
+function addWordToVocabulary(word) {
+    // Create a span element to represent the word
+    const wordSpan = document.createElement('span');
+    wordSpan.textContent = word;
+
+    // Append the word span to the vocabulary div
+    vocabularyDiv.appendChild(wordSpan);
+
+    // Add a space after the word for better readability
+    vocabularyDiv.appendChild(document.createTextNode(' '));
+}
+
+
+
+
+
 </script>
 </body>
 </html>
