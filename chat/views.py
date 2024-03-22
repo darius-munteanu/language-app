@@ -36,7 +36,7 @@ transcript = ""
 device = "cuda"
 compute_type = "float16" # change to "int8" if low on GPU mem (may reduce accuracy)
 """
-cpu_selected = True
+cpu_selected = False
 if not cpu_selected:
     device = "cuda"
     compute_type ="float16"
