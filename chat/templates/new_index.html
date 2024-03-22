@@ -132,10 +132,26 @@
       }
 
       
+      #vocabulary {
+        background-color: #ffffff; /* White background color */
+        border-radius: 10px; /* Rounded corners */
+        padding: 20px; /* Add padding for spacing inside the box */
+        height: 100%; /* Make the vocabulary div fill the sidebar */
+        text-align: center; /* Center align text within the div */
       }
+      #vocabulary ul {
+        list-style: none; /* Remove default list style */
+        padding: 0; /* Remove default padding */
+     }
+    
+     #vocabulary ul li {
+        padding: 0; /* Remove any default padding for list items */
+     }
+
       #status.glow {
         box-shadow: 0 0 5px 2px #e74c3c inset; /* Add a subtle glow using a box-shadow */
     }
+
     </style>
 </head>
 <body>
@@ -181,7 +197,9 @@
 </div>
 
 <div class="sidebar">
-    <div id = "vocabulary">hi</div>
+    <div id = "vocabulary">
+        
+    </div>
 </div>
 
 
@@ -363,8 +381,6 @@ toggleButton.addEventListener('click', () => {
  
 // Call the function on page load
  window.onload = setSelectedValue;
-  
-
 // Get references to the textarea and the div for vocabulary
 const aiChatTextarea = document.getElementById('ai_chat');
 const vocabularyDiv = document.getElementById('vocabulary');
@@ -407,25 +423,24 @@ function getClickedWord(text, cursorPosition) {
 
 // Function to add a word to the vocabulary div
 function addWordToVocabulary(word) {
-    // Create a span element to represent the word
-    const wordSpan = document.createElement('span');
-    wordSpan.textContent = word;
+    // Create a list item element to represent the word
+    const wordListItem = document.createElement('li');
+    wordListItem.textContent = word;
 
-    // Append the word span to the vocabulary div
-    vocabularyDiv.appendChild(wordSpan);
+    // Append the word list item to the vocabulary div
+    vocabularyDiv.appendChild(wordListItem);
 
-    // Add a space after the word for better readability
-    vocabularyDiv.appendChild(document.createTextNode(' '));
+    // Check if vocabulary div exceeds its height and add scrollbar if necessary
+    if (vocabularyDiv.scrollHeight > vocabularyDiv.clientHeight) {
+        vocabularyDiv.style.overflowY = 'scroll';
+    }
 
-    // Add click event listener to the word span for removal
-    wordSpan.addEventListener('click', function() {
-        // Remove the clicked word span
-        vocabularyDiv.removeChild(wordSpan);
-        // Remove the space after the word
-        vocabularyDiv.removeChild(document.createTextNode(' '));
+    // Add click event listener to the word list item for removal
+    wordListItem.addEventListener('click', function() {
+        // Remove the clicked word list item
+        vocabularyDiv.removeChild(wordListItem);
     });
 }
-
 
 
 
