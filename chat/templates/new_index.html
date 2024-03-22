@@ -426,7 +426,9 @@ function addWordToVocabulary(word) {
     // Create a list item element to represent the word
     const wordListItem = document.createElement('li');
     wordListItem.textContent = word;
-
+    //css to remove the bullegptoint
+    wordListItem.style.listStyleType = 'none';
+    wordListItem.style.padding = '0';
     // Append the word list item to the vocabulary div
     vocabularyDiv.appendChild(wordListItem);
 
